@@ -1,7 +1,5 @@
 # 2023 DB 텀프로젝트
 
-#
-
 ## DB Schema
 
 - admin(admin_id INT PK, user_name VARCHAR, password VARCHAR, email VARCHAR)
@@ -15,6 +13,8 @@
 - order_detail(cart_id INT FK, order_id INT FK)
 - delivery_request(request_id INT PK, delivery_person_id INT FK, order_id INT FK, request_date DATE, delivery_status ENUM{'pending', 'accepted', 'completed'})
 
+<br>
+
 ## 기능 구현
 
 ### 초기설정
@@ -22,10 +22,14 @@
 - [x] DB 연결
 - [x] relation 생성 & attribute 추가
 
+<br>
+
 ### 로그인
 
 - [ ] 유저 구분
 - [ ] 유저 data 저장
+
+<br>
 
 ### **Rebase 과정**
 
