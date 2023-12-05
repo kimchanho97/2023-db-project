@@ -3,15 +3,21 @@
 ## DB Schema
 
 - admin(admin_id INT PK, user_name VARCHAR, password VARCHAR, email VARCHAR)
-- client(client_id INT PK, restaurant_id INT FK, user_name VARCHAR, password VARCHAR, email VARCHAR)
-- user(user_id INT PK, user_name VARCHAR, password VARCHAR, email VARCHAR, user_type ENUM{'normal', 'vip'})
-- delivery_person(delivery_person_id INT PK, user_name VARCHAR, region VARCHAR, email VARCHAR, password VARCHAR, current_delivery_count INT)
+- clients(client_id INT PK, restaurant_id INT FK, user_name VARCHAR, password VARCHAR, email VARCHAR)
+- users(user_id INT PK, user_name VARCHAR, password VARCHAR, email VARCHAR, user_type ENUM{'normal', 'vip'})
+- riders(rider_id INT PK, user_name VARCHAR, region VARCHAR, email VARCHAR, password VARCHAR, current_delivery_count INT)
 - restaurant(restaurant_id INT PK, client_id INT FK, region VARCHAR, category VARCHAR, approval_status ENUM{'pending', 'accepted'}, restaurant_name VARCHAR, restuarant_address VARCHAR)
 - menu(menu_id INT PK, restaurant_id INT FK, menu_name VARCHAR, price INT)
 - cart(cart_id INT PK, user_id INT FK, menu_id INT FK, restaurant_id INT FK, quantity INT)
-- order(order_id INT PK, user_id INT FK, restaurant_id INT FK, order_date DATE, destination_address VARCHAR)
+- orders(order_id INT PK, user_id INT FK, restaurant_id INT FK, order_date DATE, destination_address VARCHAR)
 - order_detail(cart_id INT FK, order_id INT FK)
-- delivery_request(request_id INT PK, delivery_person_id INT FK, order_id INT FK, request_date DATE, delivery_status ENUM{'pending', 'accepted', 'completed'})
+- delivery_request(request_id INT PK, rider_id INT FK, order_id INT FK, request_date DATE, delivery_status ENUM{'pending', 'accepted', 'completed'})
+
+<br>
+
+## ERD
+
+<img width="1000" alt="스크린샷 2023-12-05 오후 2 42 00" src="https://github.com/kimchanho97/2023-db-project/assets/104095041/fe19ded7-2335-4eb7-930c-0a410d753095">
 
 <br>
 

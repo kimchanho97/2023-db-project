@@ -15,7 +15,7 @@ def dbInit():
     # admin 테이블 생성
     cur.execute("""
         CREATE TABLE IF NOT EXISTS admin(
-            admin_id INT PRIMARY KEY,
+            admin_id SERIAL PRIMARY KEY,
             user_name VARCHAR,
             email VARCHAR,
             password VARCHAR
@@ -25,7 +25,7 @@ def dbInit():
     # menu 테이블 생성
     cur.execute("""
         CREATE TABLE IF NOT EXISTS menu(
-            menu_id INT PRIMARY KEY,
+            menu_id SERIAL PRIMARY KEY,
             restaurant_id INT,
             menu_name VARCHAR,
             price INT
@@ -35,7 +35,7 @@ def dbInit():
     # cart 테이블 생성
     cur.execute("""
         CREATE TABLE IF NOT EXISTS cart(
-            cart_id INT PRIMARY KEY,
+            cart_id SERIAL PRIMARY KEY,
             user_id INT,
             menu_id INT,
             restaurant_id INT,
@@ -53,14 +53,14 @@ def dbInit():
             WHEN duplicate_object THEN null;
         END $$;
     """)
-    # user 테이블 생성
+    # users 테이블 생성
     cur.execute("""
-        CREATE TABLE IF NOT EXISTS "user"(
-            user_id INT PRIMARY KEY,
+        CREATE TABLE IF NOT EXISTS users(
+            user_id SERIAL PRIMARY KEY,
             user_name VARCHAR,
             email VARCHAR,
             password VARCHAR,
-            user_type user_type
+            user_type user_type DEFAULT 'normal'
         );
     """)
 
@@ -74,20 +74,20 @@ def dbInit():
     # restaurant 테이블 생성
     cur.execute("""
         CREATE TABLE IF NOT EXISTS restaurant(
-            restaurant_id INT PRIMARY KEY,
+            restaurant_id SERIAL PRIMARY KEY,
             client_id INT,
             region VARCHAR,
             category VARCHAR,
-            approval_status approval_status,
+            approval_status approval_status DEFAULT 'pending',
             restaurant_name VARCHAR,
             restaurant_address VARCHAR
         );
     """)
 
-    # client 테이블 생성
+    # clients 테이블 생성
     cur.execute("""
-        CREATE TABLE IF NOT EXISTS client(
-            client_id INT PRIMARY KEY,
+        CREATE TABLE IF NOT EXISTS clients(
+            client_id SERIAL PRIMARY KEY,
             restaurant_id INT,
             user_name VARCHAR,
             email VARCHAR,
@@ -95,10 +95,10 @@ def dbInit():
         );
     """)
 
-    # order 테이블 생성
+    # orders 테이블 생성
     cur.execute("""
-        CREATE TABLE IF NOT EXISTS "order"(
-            order_id INT PRIMARY KEY,
+        CREATE TABLE IF NOT EXISTS orders(
+            order_id SERIAL PRIMARY KEY,
             user_id INT,
             restaurant_id INT,
             destination_address VARCHAR,
@@ -116,21 +116,21 @@ def dbInit():
     # delivery_request 테이블 생성
     cur.execute("""
         CREATE TABLE IF NOT EXISTS delivery_request(
-            request_id INT PRIMARY KEY,
+            request_id SERIAL PRIMARY KEY,
             order_id INT,
-            delivery_person_id INT,
+            rider_id INT,
             request_date DATE,
-            delivery_status delivery_status
+            delivery_status delivery_status DEFAULT 'pending'
         );
     """)
 
-    # delivery_person 테이블 생성
+    # riders 테이블 생성
     cur.execute("""
-        CREATE TABLE IF NOT EXISTS delivery_person(
-            delivery_person_id INT PRIMARY KEY,
+        CREATE TABLE IF NOT EXISTS riders(
+            rider_id SERIAL PRIMARY KEY,
             user_name VARCHAR,
             region VARCHAR,
-            current_delivery_count INT,
+            current_delivery_count INT DEFAULT 0,
             email VARCHAR,
             password VARCHAR
         );
@@ -148,25 +148,25 @@ def dbInit():
     cur.execute(
         "ALTER TABLE menu ADD FOREIGN KEY (restaurant_id) REFERENCES restaurant(restaurant_id);")
     cur.execute(
-        "ALTER TABLE cart ADD FOREIGN KEY (user_id) REFERENCES \"user\"(user_id);")
+        "ALTER TABLE cart ADD FOREIGN KEY (user_id) REFERENCES users(user_id);")
     cur.execute(
         "ALTER TABLE cart ADD FOREIGN KEY (restaurant_id) REFERENCES restaurant(restaurant_id);")
     cur.execute(
         "ALTER TABLE cart ADD FOREIGN KEY (menu_id) REFERENCES menu(menu_id);")
     cur.execute(
-        "ALTER TABLE restaurant ADD FOREIGN KEY (client_id) REFERENCES client(client_id);")
+        "ALTER TABLE restaurant ADD FOREIGN KEY (client_id) REFERENCES clients(client_id);")
     cur.execute(
-        "ALTER TABLE client ADD FOREIGN KEY (restaurant_id) REFERENCES restaurant(restaurant_id);")
+        "ALTER TABLE clients ADD FOREIGN KEY (restaurant_id) REFERENCES restaurant(restaurant_id);")
     cur.execute(
-        "ALTER TABLE \"order\" ADD FOREIGN KEY (user_id) REFERENCES \"user\"(user_id);")
+        "ALTER TABLE orders ADD FOREIGN KEY (user_id) REFERENCES users(user_id);")
     cur.execute(
-        "ALTER TABLE \"order\" ADD FOREIGN KEY (restaurant_id) REFERENCES restaurant(restaurant_id);")
+        "ALTER TABLE orders ADD FOREIGN KEY (restaurant_id) REFERENCES restaurant(restaurant_id);")
     cur.execute(
-        "ALTER TABLE delivery_request ADD FOREIGN KEY (order_id) REFERENCES \"order\"(order_id);")
+        "ALTER TABLE delivery_request ADD FOREIGN KEY (order_id) REFERENCES orders(order_id);")
     cur.execute(
-        "ALTER TABLE delivery_request ADD FOREIGN KEY (delivery_person_id) REFERENCES delivery_person(delivery_person_id);")
+        "ALTER TABLE delivery_request ADD FOREIGN KEY (rider_id) REFERENCES riders(rider_id);")
     cur.execute(
-        "ALTER TABLE order_detail ADD FOREIGN KEY (order_id) REFERENCES \"order\"(order_id);")
+        "ALTER TABLE order_detail ADD FOREIGN KEY (order_id) REFERENCES orders(order_id);")
     cur.execute(
         "ALTER TABLE order_detail ADD FOREIGN KEY (cart_id) REFERENCES cart(cart_id);")
     con.commit()
@@ -186,7 +186,16 @@ def dbInit():
     con.close()
 
 
+def deleteAllTables():
+    # db 테이블 전체 삭제
+    cur.execute("""
+        DROP TABLE IF EXISTS admin, menu, cart, users, restaurant, clients, orders, delivery_request, riders, order_detail;
+    """)
+    con.commit()
+
+
 def main():
+    # deleteAllTables()
     dbInit()
 
 
