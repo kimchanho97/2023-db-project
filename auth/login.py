@@ -1,14 +1,10 @@
 import sys
 import os
 import re
-from signup import signup, printErrorMessages
+from .signup import register, printErrorMessages
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
-import main
-
-
-cur = main.cur
-con = main.con
+from db_config import con, cur
 
 
 def inputRole():
@@ -17,6 +13,7 @@ def inputRole():
         print("\t1. 소비자")
         print("\t2. 음식점 사장님")
         print("\t3. 배달원")
+        print("\t4. 관리자")
         print()
         role = input("\t번호를 입력하세요: ")
         if role == "1":
@@ -27,6 +24,9 @@ def inputRole():
             break
         elif role == "3":
             role = "riders"
+            break
+        elif role == "4":
+            role = "admin"
             break
         else:
             printErrorMessages(["입력이 올바르지 않습니다", "번호를 다시 입력해주세요"])
@@ -40,7 +40,7 @@ def checkSignup():
         if isHaveAccount == "y":
             return
         elif isHaveAccount == "n":
-            signup()
+            register()
             print("\t┌" + "─" * 50 + "┐")
             print("\t|{: ^47}|".format("로그인"))
             print("\t└" + "─" * 50 + "┘")
@@ -49,7 +49,7 @@ def checkSignup():
             printErrorMessages(["입력이 올바르지 않습니다", "다시 입력해주세요"])
 
 
-def login():
+def join():
     print()
     print("\t┌" + "─" * 50 + "┐")
     print("\t|{: ^47}|".format("로그인"))
@@ -70,6 +70,4 @@ def login():
             continue
         break
     printErrorMessages(["로그인 성공"])
-
-
-login()
+    return (role, result[0])
