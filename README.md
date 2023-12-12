@@ -43,7 +43,7 @@
 
 ## ERD
 
-<img width="1000" alt="스크린샷 2023-12-05 오전 1 51 30" src="https://github.com/kimchanho97/2023-db-project/assets/104095041/1628406a-1c2f-4eaf-b597-88a8b16c106d">
+<img width="1000" alt="스크린샷 2023-12-12 오후 2 33 48" src="https://github.com/kimchanho97/2023-db-project/assets/104095041/0511efbb-f2d8-40af-86e7-1bed08129ceb">
 
 <br>
 
