@@ -1,52 +1,92 @@
-# 2023 DB 텀프로젝트
+# 2023-2 DB 텀프로젝트
 
-## DB Schema
+> 목차
+>
+> - [📌 프로젝트 소개](#프로젝트-소개)
+> - [👩‍👩‍👧‍👧 팀원 소개](#팀원-소개)
+> - [✏️ 주요 기능](#주요-기능)
+> - [📜 ERD](#erd)
+> - [📁 파일 구조](#파일-구조)
+> - [🚩 시작 가이드](#시작-가이드)
 
-- admin(admin_id INT PK, user_name VARCHAR, password VARCHAR, email VARCHAR)
-- clients(client_id INT PK, restaurant_id INT FK, user_name VARCHAR, password VARCHAR, email VARCHAR)
-- users(user_id INT PK, user_name VARCHAR, password VARCHAR, email VARCHAR, user_type ENUM{'normal', 'vip'})
-- riders(rider_id INT PK, user_name VARCHAR, region VARCHAR, email VARCHAR, password VARCHAR, current_delivery_count INT)
-- restaurant(restaurant_id INT PK, client_id INT FK, region VARCHAR, category VARCHAR, approval_status ENUM{'pending', 'accepted'}, restaurant_name VARCHAR, restuarant_address VARCHAR)
-- menu(menu_id INT PK, restaurant_id INT FK, menu_name VARCHAR, price INT)
-- cart(cart_id INT PK, user_id INT FK, menu_id INT FK, restaurant_id INT FK, quantity INT)
-- orders(order_id INT PK, user_id INT FK, restaurant_id INT FK, order_date DATE, destination_address VARCHAR)
-- order_detail(cart_id INT FK, order_id INT FK)
-- delivery_request(request_id INT PK, rider_id INT FK, order_id INT FK, request_date DATE, delivery_status ENUM{'pending', 'accepted', 'completed'})
+## 프로젝트 소개
+
+### 개발 동기 및 목적
+
+<br>
+
+### 서비스 소개
+
+>
+
+1.
+2.
+3.
+4.
+
+<br>
+
+### 개발 기간
+
+2023.11.10 - 2023.12.12
+
+<br>
+
+## 팀원 소개
+
+|          [김찬호](https://github.com/kimchanho97)          |          [이강빈](https://github.com/tonyusingit)          |
+| :--------------------------------------------------------: | :--------------------------------------------------------: |
+| <img src="https://github.com/kimchanho97.png" width="100"> | <img src="https://github.com/tonyusingit.png" width="100"> |
+|                      user, rider 구현                      |                        client 구현                         |
 
 <br>
 
 ## ERD
 
-<img width="1000" alt="스크린샷 2023-12-05 오후 2 42 00" src="https://github.com/kimchanho97/2023-db-project/assets/104095041/fe19ded7-2335-4eb7-930c-0a410d753095">
+<img width="1000" alt="스크린샷 2023-12-05 오전 1 51 30" src="https://github.com/kimchanho97/2023-db-project/assets/104095041/1628406a-1c2f-4eaf-b597-88a8b16c106d">
 
 <br>
 
 ## 기능 구현
 
-### 초기설정
+## 파일 구조
 
-- [x] DB 연결
-- [x] relation 생성 & attribute 추가
+```
+├───📂auth
+│   ├───📜login.py
+│   └───📜signup.py
+├───📜admin.py
+├───📜client.py
+├───📜constant.py
+├───📜db_config.py
+├───📜main.py
+├───📜mocking.py
+├───📜rider.py
+├───📜user.py
+└───📜utils.py
+```
 
 <br>
 
-### 로그인
+## 시작 가이드
 
-- [ ] 유저 구분
-- [ ] 유저 data 저장
+![Python](https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=Python&logoColor=white)
+
+> Requirements: Python3
+
+1. 프로젝트 클론
+
+```bash
+git clone https://github.com/kimchanho97/2023-db-project.git
+cd 2023-db-project
+```
+
+2. 실행
+
+```bash
+pip install psycopg2
+python mocking.py
+python main.py
+```
 
 <br>
-
-### **Rebase 과정**
-
-1. 같이 작업하고 있는 base에서 팀원의 PR이 머지됨
-2. 현재 나의 branch(로컬)에서 작업한 것 → 커밋(커밋이 있을 경우)
-3. `git switch base` (base 브랜치로 이동)
-4. `git pull origin base` (머지된 변경사항을 base로 가져옴)
-5. `git switch stem` (본인 브랜치로 이동)
-6. `git rebase base` (base와 rebase 실시)
-7. conflict 수정(만약 상대방의 코드 수정시 DM)
-8. conflict 해결
-9. `git add <file>`
-10. `git rebase —continue`
-11. 작업을 계속 수행한 뒤 → PR

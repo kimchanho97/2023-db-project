@@ -3,11 +3,8 @@ import os
 import re
 
 sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))))
-import main
+from db_config import con, cur
 
-
-cur = main.cur
-con = main.con
 
 GEUMJEONGGU_MAP = {
     "1": "두구동",
@@ -209,7 +206,7 @@ def storeUserInDB(role, name, email, password, region):
             f"insert into {role} (user_name, email, password) values ('{name}', '{email}', '{password}');")
 
 
-def signup():
+def register():
     print()
     print("\t┌" + "─" * 50 + "┐")
     print("\t|{: ^46}|".format("회원가입"))
@@ -228,6 +225,3 @@ def signup():
     printErrorMessages(["회원가입이 완료되었습니다"])
     print()
     con.commit()
-
-
-# signup()
