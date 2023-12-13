@@ -251,4 +251,5 @@ def mockUp():
 
 
 mockUp()
-print("Mockup data created successfully!")
+print("\tMockup data created successfully!")
+print()

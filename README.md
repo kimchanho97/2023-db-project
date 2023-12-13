@@ -54,7 +54,7 @@ python mocking.py
 python main.py
 ```
 
-- mocking.py: 초기 데이터 생성
+- mocking.py: 초기 데이터 생성(한번만 실행)
 - main.py: 프로그램 실행
 
 <br>
