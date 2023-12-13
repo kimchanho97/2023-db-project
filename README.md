@@ -50,12 +50,10 @@ cd 2023-db-project
 
 ```bash
 pip install psycopg2
-python db_config.py
 python mocking.py
 python main.py
 ```
 
-- db_config.py: 테이블 생성 및 관계 설정
 - mocking.py: 초기 데이터 생성
 - main.py: 프로그램 실행
 
