@@ -23,7 +23,7 @@ def inputRegion():
         if region in GEUMJEONGGU_MAP.keys():
             break
         else:
-            utils.printMessages(["입력이 올바르지 않습니다", "다시 입력해주세요"])
+            printMessages(["입력이 올바르지 않습니다", "다시 입력해주세요"])
             continue
     return GEUMJEONGGU_MAP[region]
 
@@ -38,7 +38,7 @@ def inputCategory():
         if category in FOOD_CATEGORY.keys():
             break
         else:
-            utils.printMessages(["입력이 올바르지 않습니다", "다시 입력해주세요"])
+            printMessages(["입력이 올바르지 않습니다", "다시 입력해주세요"])
             continue
     return FOOD_CATEGORY[category]
 

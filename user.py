@@ -5,16 +5,23 @@ import utils
 
 def addCart(rows, restaurantId, userId):
     print()
-    number = int(input("\t메뉴를 선택하세요(번호 입력): "))
-    quantity = int(input("\t수량을 입력하세요: "))
+    while True:
+        number = input("\t메뉴를 선택하세요(번호 입력): ")
+        if number.isdigit() and 1 <= int(number) <= len(rows):
+            break
+        utils.printMessages(["입력이 올바르지 않습니다", "다시 입력해주세요"])
+    while True:
+        quantity = input("\t수량을 입력하세요: ")
+        if quantity.isdigit():
+            break
+        utils.printMessages(["입력이 올바르지 않습니다", "다시 입력해주세요"])
     cur.execute("INSERT INTO cart (user_id, menu_id, restaurant_id, quantity) VALUES (%s, %s, %s, %s)",
-                (userId, rows[number - 1][0], restaurantId, quantity))
+                (userId, rows[int(number) - 1][0], restaurantId, int(quantity)))
     utils.printMessages(["장바구니 담기 완료"])
     con.commit()
 
 
 def readCart(userId, restaurantId):
-    print()
     cur.execute("""
         SELECT cart.*, menu.menu_name, menu.price
         FROM cart
@@ -22,7 +29,7 @@ def readCart(userId, restaurantId):
         WHERE cart.user_id = %s AND cart.restaurant_id = %s AND cart.cart_status = 'pending'
     """, (userId, restaurantId))
     rows = cur.fetchall()
-    print("\t장바구니")
+    utils.printMessages(["장바구니 조회"])
     if rows:
         totalPrice = 0
         for i in range(len(rows)):
@@ -31,6 +38,16 @@ def readCart(userId, restaurantId):
             totalPrice += rows[i][7] * rows[i][4]
         print()
         print("\t총 가격: " + str(totalPrice) + "원")
+        print()
+        isRemove = input("\t장바구니에서 항목을 삭제하시겠습니까?(y/n): ")
+        if isRemove == "y":
+            number = utils.inputNumber(1, len(rows))
+            cur.execute(
+                "DELETE FROM cart WHERE cart_id = %s", (rows[number - 1][0],))
+            con.commit()
+            utils.printMessages(["장바구니에서 삭제 완료"])
+        else:
+            return
     else:
         utils.printMessages(["장바구니가 비어있습니다"])
 
@@ -90,7 +107,6 @@ def selectMenus(restaurantId, userId):
             elif number == 3:
                 orderCart(userId, restaurantId)
             elif number == 4:
-                utils.printMessages(["로그아웃 완료"])
                 break
     else:
         utils.printMessages(["등록된 메뉴가 없습니다"])
@@ -118,7 +134,11 @@ def selectRestaurant(rows, userId):
 
 def searchRestaurant(userId):
     utils.printMessages(["음식점 검색"])
+    print("\t0. 뒤로가기")
+    print()
     name = input("\t음식점 이름: ")
+    if name == "0":
+        return
     print()
     cur.execute(
         "SELECT * FROM restaurant WHERE restaurant_name = %s and approval_status = 'accepted'", (name,))
@@ -153,13 +173,36 @@ def searchRestaurantByCategory(userId):
         utils.printMessages(["검색 결과가 없습니다"])
 
 
+def readMyOrders(userId):
+    utils.printMessages(["주문 내역 조회"])
+    cur.execute("""
+        SELECT orders.*, restaurant.restaurant_name
+        FROM orders
+        INNER JOIN restaurant ON orders.restaurant_id = restaurant.restaurant_id
+        WHERE orders.user_id = %s
+        ORDER BY orders.order_date
+    """, (userId,))
+    rows = cur.fetchall()
+    print()
+    print("\t|{:^8}|{:^13}|{:^18}|{:^20}|{:^12}|".format(
+        "주문 번호", "음식점 이름", "배달지 주소", "주문 날짜", "주문 상태"))
+    print("\t"'+' + '-' * 12 + '+' + '-' * 18 + '+' +
+          '-' * 23 + '+' + '-' * 24 + '+' + '-' * 16 + '+')
+    print()
+    for row in rows:
+        print("\t{}. {:^13}|{:^18}|{:^25}|{:^12}|".format(
+            row[0], row[6], row[3], str(row[4]), ("배달 접수전" if row[5] == "pending" else ("배달 중" if row[5] == "accepted" else "배달 완료"))))
+    print()
+
+
 def inputFunction(userId):
     while True:
-        print()
-        print("\t1. 음식점 검색")
+        utils.printMessages(["메인 기능"])
+        print("\t1. 음식점명으로 검색")
         print("\t2. 동네별로 음식점 조회")
         print("\t3. 카테고리별로 음식점 조회")
-        print("\t4. 로그아웃")
+        print("\t4. 주문 내역 조회")
+        print("\t5. 로그아웃")
         print()
         function = input("\t번호를 입력하세요: ")
         print()
@@ -173,6 +216,8 @@ def inputFunction(userId):
             searchRestaurantByCategory(userId)
             continue
         elif function == "4":
+            readMyOrders(userId)
+        elif function == "5":
             utils.printMessages(["로그아웃 완료"])
             break
         else:
@@ -181,3 +226,4 @@ def inputFunction(userId):
 
 
 # inputFunction(1)
+# inputFunction(2)

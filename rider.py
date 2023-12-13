@@ -9,7 +9,7 @@ def acceptDeliveryRequest(requestId, userId, userType):
                     """, (userId,))
         currentDeliveryCount = cur.fetchone()[0]
         if currentDeliveryCount != 0:
-            utils.printMessages(["현재 배달중인 주문이 있습니다"])
+            utils.printMessages(["현재 배달중인 주문이 있습니다", "한집 배달건은 한번에 한건만 가능합니다"])
             return
 
     cur.execute("""
@@ -50,7 +50,6 @@ def readOrder(userId):
     if not rows:
         utils.printMessages(["배달 가능한 주문이 없습니다"])
         return
-    print(rows)
     print("\t|{:^6}|{:^8}|{:^12}|{:^12}|{:^16}|{:^6}|".format(
         "요청번호", "음식점명", "음식점 주소", "배달 주소", "배달 요청 일시", "한집배달"))
     print("\t"'+' + '-' * 10 + '+' + '-' * 12 + '+' + '-' * 17 + '+' +
@@ -72,11 +71,15 @@ def readOrder(userId):
 
 def doneDeliveryRequest(requestId, userId):
     cur.execute("""
-        UPDATE delivery_request SET delivery_status = 'completed' WHERE request_id = %s;
+        UPDATE delivery_request SET delivery_status = 'completed' WHERE request_id = %s RETURNING order_id;
     """, (requestId,))
+    orderId = cur.fetchone()[0]
     cur.execute("""
-        UPDATE riders SET current_delivery_count = current_delivery_count - 1 WHERE rider_id = %s;
+        UPDATE riders SET current_delivery_count = current_delivery_count - 1 WHERE rider_id = %s ;
     """, (userId,))
+    cur.execute("""
+        UPDATE orders SET order_status = 'completed' WHERE order_id = %s;
+    """, (orderId,))
     con.commit()
     utils.printMessages(["배달 완료 처리 완료"])
 
@@ -89,7 +92,8 @@ def readMyOrder(userId):
             r.restaurant_address,
             o.destination_address,
             dr.request_date,
-            u.user_type
+            u.user_type,
+            dr.delivery_status
         FROM 
             delivery_request dr
         JOIN 
@@ -99,7 +103,7 @@ def readMyOrder(userId):
         JOIN 
             restaurant r ON o.restaurant_id = r.restaurant_id
         WHERE 
-            dr.delivery_status = 'accepted' AND dr.rider_id = %s;
+            dr.rider_id = %s;
     """, (userId,))
     rows = cur.fetchall()
     if not rows:
@@ -111,8 +115,8 @@ def readMyOrder(userId):
           '-' * 16 + '+' + '-' * 22 + '+' + '-' * 10 + '+')
     print()
     for i in range(len(rows)):
-        print("\t|{:^6}|{:^8}|{:^12}|{:^12}|{:^30}|{:^6}|".format(
-            i + 1, rows[i][1], rows[i][2], rows[i][3], str(rows[i][4]), ("O" if rows[i][5] == "vip" else "X")))
+        print("\t{}. | {} | {} | {} | {} | {} | - {}".format(
+            i + 1, rows[i][1], rows[i][2], rows[i][3], str(rows[i][4]), ("O" if rows[i][5] == "vip" else "X"), ("배달 완료" if rows[i][6] == "completed" else " 배달 미완료")))
     print()
     print("\t0. 뒤로가기")
     print()
@@ -120,13 +124,16 @@ def readMyOrder(userId):
     number = utils.inputNumber(0, len(rows))
     if number == 0:
         return
+    if rows[number - 1][6] == "completed":
+        utils.printMessages(["이미 배달 완료된 주문입니다"])
+        return
     doneDeliveryRequest(rows[number - 1][0], userId)
     return
 
 
 def inputFunction(userId):
     while True:
-        print()
+        utils.printMessages(["메인 기능"])
         print("\t1. 가능한 배달 주문 조회")
         print("\t2. 나의 배달 주문 조회")
         print("\t3. 로그아웃")

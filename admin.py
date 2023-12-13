@@ -37,7 +37,7 @@ def approveRestaurant():
 
 def inputFunction(userId):
     while True:
-        print()
+        utils.printMessages(["메인 기능"])
         print("\t1. 미승인 음식점 조회")
         print("\t2. 로그아웃")
         print()

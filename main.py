@@ -7,7 +7,6 @@ import admin
 
 
 def main():
-    db_config.dbInit()
     role, userId = login.join()
     if role == "clients":
         client.inputFunction(userId)

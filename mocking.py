@@ -1,4 +1,5 @@
 from db_config import con, cur
+from datetime import datetime
 
 
 def createAdminData():
@@ -62,8 +63,15 @@ def createRidersData():
         cur.execute("""
             INSERT INTO riders(user_name, region, current_delivery_count, email, password)
             VALUES (%s, %s, %s, %s, %s);
-        """, (name, region, i % 5, email, password))
+        """, (name, region, 0, email, password))
         con.commit()
+
+    cur.execute("""
+        UPDATE riders
+        SET current_delivery_count = 1
+        WHERE rider_id = 5;
+    """)
+    con.commit()
 
 
 def createRestaurantData():
@@ -123,38 +131,109 @@ def createMenuData():
         con.commit()
 
 
+def createCartData():
+    # cart 테이블에 데이터 삽입
+    data = [
+        (14, 2, 15, 5, 1, 'accepted'),
+        (15, 2, 10, 5, 1, 'accepted'),
+        (16, 2, 20, 5, 1, 'accepted'),
+        (1, 1, 5, 5, 2, 'accepted'),
+        (2, 1, 10, 5, 2, 'accepted'),
+        (3, 1, 15, 5, 3, 'accepted'),
+        (4, 1, 20, 5, 4, 'accepted'),
+        (5, 1, 5, 5, 10, 'accepted'),
+        (6, 1, 10, 5, 3, 'accepted'),
+        (7, 1, 20, 5, 1, 'accepted'),
+        (8, 1, 15, 5, 1, 'accepted'),
+        (9, 1, 15, 5, 5, 'accepted'),
+        (10, 1, 10, 5, 4, 'accepted'),
+        (11, 1, 15, 5, 1, 'accepted'),
+        (12, 1, 10, 5, 1, 'accepted'),
+        (13, 1, 20, 5, 1, 'accepted')
+    ]
+
+    for entry in data:
+        cur.execute("""
+            INSERT INTO cart(cart_id, user_id, menu_id, restaurant_id, quantity, cart_status)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, entry)
+        con.commit()
+
+
 def createOrdersData():
-    cur.execute("""
-        INSERT INTO orders(user_id, restaurant_id, destination_address, order_date)
-        VALUES 
-            (1, 1, '두구동 1번지', '2023-12-01'),
-            (2, 2, '노포동 2번지', '2023-12-02'),
-            (3, 3, '청룡동 3번지', '2023-12-03'),
-            (4, 4, '남산동 4번지', '2023-12-04'),
-            (5, 5, '선동 5번지', '2023-12-05'),
-            (6, 6, '오륜동 6번지', '2023-12-06'),
-            (7, 7, '구서동 7번지', '2023-12-07'),
-            (8, 8, '장전동 8번지', '2023-12-08'),
-            (9, 9, '부곡동 9번지', '2023-12-09'),
-            (10, 10, '서동 10번지', '2023-12-10');
-    """)
+    # order 테이블에 데이터 삽입
+    data = [
+        (6, 1, 5, '부산대학교 도서관', datetime(2023, 12, 12, 18, 33, 21), 'pending'),
+        (7, 1, 5, '부산대학교 대운동장', datetime(2023, 12, 12, 18, 33, 38), 'pending'),
+        (8, 1, 5, '부산대학교 기계관', datetime(2023, 12, 12, 18, 33, 49), 'pending'),
+        (2, 1, 5, '부산대학교 정문', datetime(2023, 12, 12, 18, 31, 2), 'accepted'),
+        (3, 1, 5, '부산대학교 본관', datetime(2023, 12, 12, 18, 31, 15), 'accepted'),
+        (4, 1, 5, '부산대학교 넉터', datetime(2023, 12, 12, 18, 31, 27), 'accepted'),
+        (5, 1, 5, '부산대학교 약학관', datetime(2023, 12, 12, 18, 31, 40), 'accepted'),
+        (9, 1, 5, '부산대학교 6408', datetime(2023, 12, 12, 18, 42, 58), 'pending'),
+        (10, 1, 5, '부산대학교 6514', datetime(2023, 12, 12, 18, 43, 10), 'pending'),
+        (11, 1, 5, '부산대학교 6516', datetime(2023, 12, 12, 18, 43, 20), 'pending'),
+        (13, 2, 5, '부산대학교 6203', datetime(2023, 12, 12, 18, 44, 21), 'pending'),
+        (12, 2, 5, '부산대학교 6202', datetime(2023, 12, 12, 18, 44, 11), 'accepted'),
+        (14, 2, 5, '부산대학교 6514', datetime(2023, 12, 12, 18, 44, 37), 'accepted'),
+        (1, 1, 5, '부산대학교 1공학관', datetime(2023, 12, 12, 18, 29, 45), 'completed')
+    ]
+
+    for entry in data:
+        cur.execute("""
+            INSERT INTO orders(order_id, user_id, restaurant_id, destination_address, order_date, order_status)
+            VALUES (%s, %s, %s, %s, %s, %s)
+        """, entry)
+        con.commit()
+
+
+def createOrderDetailData():
+    # order_detail 테이블에 데이터 삽입
+    data = [
+        (1, 1),
+        (1, 2),
+        (2, 3),
+        (3, 4),
+        (4, 5),
+        (5, 6),
+        (6, 7),
+        (6, 8),
+        (7, 9),
+        (8, 10),
+        (9, 11),
+        (10, 12),
+        (11, 13),
+        (12, 14),
+        (13, 15),
+        (14, 16)
+    ]
+
+    for entry in data:
+        cur.execute("""
+            INSERT INTO order_detail(order_id, cart_id)
+            VALUES (%s, %s)
+        """, entry)
+        con.commit()
 
 
 def createDeliveryRequestData():
-    cur.execute("""
-    INSERT INTO delivery_request(order_id, rider_id, request_date, delivery_status)
-    VALUES 
-        (1, NULL, '2023-12-01', 'pending'),
-        (2, NULL, '2023-12-02', 'pending'),
-        (3, 1, '2023-12-03', 'accepted'),
-        (4, 2, '2023-12-04', 'completed'),
-        (5, NULL, '2023-12-05', 'pending'),
-        (6, 3, '2023-12-06', 'completed'),
-        (7, 4, '2023-12-07', 'accepted'),
-        (8, NULL, '2023-12-08', 'pending'),
-        (9, 5, '2023-12-09', 'completed'),
-        (10, NULL, '2023-12-10', 'pending');
-    """)
+    # delivery_request 테이블에 데이터 삽입
+    data = [
+        (4, 3, None, datetime(2023, 12, 12, 18, 38, 31), 'pending'),
+        (5, 4, None, datetime(2023, 12, 12, 18, 38, 34), 'pending'),
+        (6, 5, None, datetime(2023, 12, 12, 18, 38, 37), 'pending'),
+        (7, 12, None, datetime(2023, 12, 12, 18, 45, 4), 'pending'),
+        (8, 14, None, datetime(2023, 12, 12, 18, 45, 7), 'pending'),
+        (1, 1, 5, datetime(2023, 12, 12, 18, 34, 10), 'completed'),
+        (3, 2, 5, datetime(2023, 12, 12, 18, 38, 27), 'accepted')
+    ]
+
+    for entry in data:
+        cur.execute("""
+            INSERT INTO delivery_request(request_id, order_id, rider_id, request_date, delivery_status)
+            VALUES (%s, %s, %s, %s, %s)
+        """, entry)
+        con.commit()
 
 
 def mockUp():
@@ -163,9 +242,12 @@ def mockUp():
     createClientsData()
     createRidersData()
     createRestaurantData()
+
     createMenuData()
-    # createOrdersData()
-    # createDeliveryRequestData()
+    createCartData()
+    createOrdersData()
+    createOrderDetailData()
+    createDeliveryRequestData()
 
 
 mockUp()

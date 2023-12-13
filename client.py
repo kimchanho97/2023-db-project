@@ -40,6 +40,28 @@ def addMenu(restaurantId):
     con.commit()
 
 
+def removeMenu(restaurantId):
+    cur.execute("SELECT * FROM menu WHERE restaurant_id = %s", (restaurantId,))
+    result = cur.fetchall()
+    if not result:
+        utils.printMessages(["등록된 메뉴가 없습니다"])
+        return
+    while True:
+        number = input("\t삭제할 메뉴 번호: ")
+        if number.isdigit():
+            if int(number) < 1 or int(number) > len(result):
+                utils.printMessages(["입력이 올바르지 않습니다", "다시 입력해주세요"])
+                continue
+            cur.execute("DELETE FROM menu WHERE menu_id = %s",
+                        (result[int(number) - 1][0],))
+            utils.printMessages(["메뉴 삭제 완료"])
+            con.commit()
+            break
+        else:
+            utils.printMessages(["입력이 올바르지 않습니다", "다시 입력해주세요"])
+            continue
+
+
 def readMyRestaurant(userId):
     cur.execute("SELECT * FROM restaurant WHERE client_id = %s", (userId,))
     row = cur.fetchone()
@@ -50,25 +72,30 @@ def readMyRestaurant(userId):
     print("\t음식점 카테고리: " + row[3])
     print("\t음식점 승인 상태: " + ('승인완료' if row[4] == 'accepted' else '승인 미완료'))
     print()
-    cur.execute("SELECT * FROM menu WHERE restaurant_id = %s", (row[0],))
-    result = cur.fetchall()
-    if result:
-        print("\t메뉴")
-        for i in range(len(result)):
-            print("\t" + str(i + 1) + ". " +
-                  result[i][2] + " - " + str(result[i][3]) + "원")
-        print()
-    else:
-        utils.printMessages(["등록된 메뉴가 없습니다"])
     while True:
-        isAddMenu = input("\t메뉴를 추가하시겠습니까?(y/n): ")
-        if isAddMenu == "y":
-            addMenu(row[0])
-        elif isAddMenu == "n":
-            break
+        cur.execute("SELECT * FROM menu WHERE restaurant_id = %s", (row[0],))
+        result = cur.fetchall()
+        if result:
+            print("\t메뉴")
+            for i in range(len(result)):
+                print("\t" + str(i + 1) + ". " +
+                      result[i][2] + " - " + str(result[i][3]) + "원")
+            print()
         else:
-            utils.printMessages(["입력이 올바르지 않습니다", "다시 입력해주세요"])
+            utils.printMessages(["등록된 메뉴가 없습니다"])
+        print("\t1) 메뉴 추가")
+        print("\t2) 메뉴 삭제")
+        print("\t3) 뒤로가기")
+        print()
+        function = utils.inputNumber(1, 3)
+        if function == 1:
+            addMenu(row[0])
             continue
+        elif function == 2:
+            removeMenu(row[0])
+            continue
+        elif function == 3:
+            break
 
 
 def checkRestaurant(userId):
@@ -95,7 +122,7 @@ def readOrder(restaurantId):
                 (restaurantId,))
     result = cur.fetchall()
     if result:
-        print("\t주문 내역")
+        print("\t----- 주문 내역 -----")
         cur.execute(
             """
             SELECT 
@@ -136,12 +163,13 @@ def readOrder(restaurantId):
         print()
         print("\t0. 뒤로가기")
         print()
-        print("\t배달 요청")
+        print("\t----- 배달 요청 -----")
         while True:
             orderId = input("\t주문 번호 입력: ")
-            if orderId.isdigit():
-                if int(orderId) == 0:
-                    break
+            orderIds = [result[i][0] for i in range(len(result))]
+            if orderId == "0":
+                return
+            if orderId.isdigit() and int(orderId) in orderIds:
                 requestDelivery(orderId)
                 break
             else:
@@ -154,7 +182,7 @@ def readOrder(restaurantId):
 def inputFunction(userId):
     while True:
         restaurantId = checkRestaurant(userId)
-        print()
+        utils.printMessages(["메인 기능"])
         print("\t1. 음식점 등록")
         print("\t2. 나의 음식점 조회")
         print("\t3. 주문 조회")

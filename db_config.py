@@ -34,7 +34,7 @@ def dbInit():
 
     cur.execute("""
         DO $$ BEGIN
-            CREATE TYPE cart_status AS ENUM ('pending', 'accepted', 'completed');
+            CREATE TYPE cart_status AS ENUM ('pending', 'accepted');
         EXCEPTION
             WHEN duplicate_object THEN null;
         END $$;
@@ -194,10 +194,11 @@ def dbInit():
     """)
     result = cur.fetchall()
     print()
-    print(f"Tables in the database: {len(result)}")
+    print(f"\tTables in the database: {len(result)}")
     result.sort()
     for i in range(len(result)):
-        print(f"{i+1}. {result[i][0]}")
+        print(f"\t{i+1}. {result[i][0]}")
+    print()
 
 
 def deleteAllTables():
@@ -209,4 +210,4 @@ def deleteAllTables():
 
 
 # deleteAllTables()
-# dbInit()
+dbInit()
